@@ -9,7 +9,7 @@ const PAYPAL_URL = "https://ko-fi.com/matchifesto";
 const T={
  pt:{tag:"Brasileiros 🇧🇷 × Franceses 🇫🇷",foot:"Só maiores de 18 anos. O ❤️ mostra o @ da pessoa: a conversa continua na rede social dela.",
   loading:"Carregando…",login:"Entre com seu e-mail",loginP:"A gente te manda um link mágico. Sem senha.",email:"Seu e-mail",send:"Enviar link",
-  sent:"Pronto! Abra seu e-mail e clique no link pra entrar.",eMail:"Digite um e-mail válido.",eSend:"Não deu pra enviar o link. Espere um minutinho e tente de novo.",
+  sent:"Pronto! Abra seu e-mail e clique no link pra entrar.",spam:"Não chegou? Confira a caixa de spam 📬 e marque como \"não é spam\".",eMail:"Digite um e-mail válido.",eSend:"Não deu pra enviar o link. Espere um minutinho e tente de novo.",
   welcome:"Crie seu cartão",welcomeP:"Escolha seu lado. Você só vai ver gente do outro país.",
   iam:"Eu sou",br:"🇧🇷 Brasileira(o)",fr:"🇫🇷 Française / Français",name:"Nome",age:"Idade",city:"Cidade",
   langs:"Idiomas que você fala",langsPh:"português, um pouco de francês",bio:"Uma frase sobre você",bioPh:"Faço o melhor pão de queijo de Lyon",
@@ -22,7 +22,7 @@ const T={
   confirmDel:"Toque de novo para apagar",logout:"Sair",tip:"☕ Me paga um café",tipT:"Gostou? Me paga um café",tipP:"É só uma brincadeira, o app continua de graça. Se quiser apoiar, qualquer valor ajuda!",pix:"Pix (Brasil)",copyKey:"Copiar chave",euro:"Euro / outros países",open:"Abrir Ko-fi",close:"Fechar"},
  fr:{tag:"Brésiliens 🇧🇷 × Français 🇫🇷",foot:"Réservé aux plus de 18 ans. Le ❤️ révèle le @ de la personne : la conversation continue sur son réseau.",
   loading:"Chargement…",login:"Connecte-toi avec ton e-mail",loginP:"On t'envoie un lien magique. Pas de mot de passe.",email:"Ton e-mail",send:"Envoyer le lien",
-  sent:"C'est parti ! Ouvre ton e-mail et clique sur le lien.",eMail:"Entre un e-mail valide.",eSend:"Impossible d'envoyer le lien. Attends une minute et réessaie.",
+  sent:"C'est parti ! Ouvre ton e-mail et clique sur le lien.",spam:"Rien reçu ? Regarde dans tes spams 📬 et marque-le comme \"non spam\".",eMail:"Entre un e-mail valide.",eSend:"Impossible d'envoyer le lien. Attends une minute et réessaie.",
   welcome:"Crée ta carte",welcomeP:"Choisis ton camp. Tu ne verras que des gens de l'autre pays.",
   iam:"Je suis",br:"🇧🇷 Brésilien·ne",fr:"🇫🇷 Française / Français",name:"Prénom",age:"Âge",city:"Ville",
   langs:"Langues parlées",langsPh:"français, un peu de portugais",bio:"Une phrase sur toi",bioPh:"Je connais tous les bars de samba de Paris",
@@ -156,14 +156,15 @@ async function report(p){
 function renderLogin(){
   view.innerHTML=`<form class="panel" id="lf" novalidate><h2>${t("login")}</h2><p>${t("loginP")}</p>
    <label for="l-email">${t("email")}<input id="l-email" type="email" autocomplete="email" inputmode="email"></label>
-   <div class="err" id="l-err" role="alert"></div><button class="primary" type="submit" id="l-btn">${t("send")}</button></form>`;
+   <div class="err" id="l-err" role="alert"></div><button class="primary" type="submit" id="l-btn">${t("send")}</button>
+   <p class="meta" style="margin:0">${t("spam")}</p></form>`;
   $("#lf").onsubmit=async e=>{e.preventDefault();const email=$("#l-email").value.trim();
     if(!/^\S+@\S+\.\S+$/.test(email)){$("#l-err").textContent=t("eMail");return}
     $("#l-btn").disabled=true;
     const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname}});
     $("#l-btn").disabled=false;
     if(error){$("#l-err").textContent=t("eSend");return}
-    $("#lf").innerHTML=`<h2>💌</h2><p>${t("sent")}</p>`};
+    $("#lf").innerHTML=`<h2>💌</h2><p>${t("sent")}</p><p><b>${t("spam")}</b></p>`};
 }
 
 function renderForm(){
