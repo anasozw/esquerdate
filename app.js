@@ -1,6 +1,9 @@
 // ====== COLE AQUI AS DUAS CHAVES DO SUPABASE (passo 3 do guia) ======
 const SUPABASE_URL = "https://iihesjxzqeovplqxeaod.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable__0H4IPQ0HNr2cxxcLcr-fg_dlQ1Qqjh";
+// Doações (deixe "" pra esconder)
+const PIX_KEY = "";
+const PAYPAL_URL = "";
 // ====================================================================
 
 const T={
@@ -16,7 +19,7 @@ const T={
   match:"Deu match! 🎉",matchP:"Vocês se curtiram. Chama essa pessoa em:",sentLike:"❤️ enviado! Se a pessoa te curtir também, o @ dela aparece nos seus matches.",copy:"Copiar @",copied:"Copiado!",next:"Próximo cartão",
   edit:"Editar meu cartão",likes:"Meus matches",report:"Denunciar",reported:"Denúncia enviada. Obrigada!",back:"Voltar",
   likesEmpty:"Ainda sem match. Continue deslizando!",admin:"Moderação",remove:"Remover",reports:"denúncias",del:"Apagar meu cartão",
-  confirmDel:"Toque de novo para apagar",logout:"Sair"},
+  confirmDel:"Toque de novo para apagar",logout:"Sair",tip:"☕ Me paga um café",tipT:"Gostou? Me paga um café",tipP:"É só uma brincadeira, o app continua de graça. Se quiser apoiar, qualquer valor ajuda!",pix:"Pix (Brasil)",copyKey:"Copiar chave",euro:"Euro / outros países",open:"Abrir PayPal",close:"Fechar"},
  fr:{tag:"Brésiliens 🇧🇷 × Français 🇫🇷",foot:"Réservé aux plus de 18 ans. Le ❤️ révèle le @ de la personne : la conversation continue sur son réseau.",
   loading:"Chargement…",login:"Connecte-toi avec ton e-mail",loginP:"On t'envoie un lien magique. Pas de mot de passe.",email:"Ton e-mail",send:"Envoyer le lien",
   sent:"C'est parti ! Ouvre ton e-mail et clique sur le lien.",eMail:"Entre un e-mail valide.",eSend:"Impossible d'envoyer le lien. Attends une minute et réessaie.",
@@ -29,7 +32,7 @@ const T={
   match:"C'est un match ! 🎉",matchP:"Vous vous êtes plu. Écris à cette personne sur :",sentLike:"❤️ envoyé ! Si la personne te like aussi, son @ apparaîtra dans tes matchs.",copy:"Copier le @",copied:"Copié !",next:"Carte suivante",
   edit:"Modifier ma carte",likes:"Mes matchs",report:"Signaler",reported:"Signalement envoyé. Merci !",back:"Retour",
   likesEmpty:"Pas encore de match. Continue à swiper !",admin:"Modération",remove:"Retirer",reports:"signalements",del:"Supprimer ma carte",
-  confirmDel:"Touche encore pour supprimer",logout:"Déconnexion"}
+  confirmDel:"Touche encore pour supprimer",logout:"Déconnexion",tip:"☕ Paie-moi un café",tipT:"Ça te plaît ? Paie-moi un café",tipP:"C’est juste pour le fun, l’appli reste gratuite. Si tu veux soutenir, chaque euro compte !",pix:"Pix (Brésil)",copyKey:"Copier la clé",euro:"Euro / autres pays",open:"Ouvrir PayPal",close:"Fermer"}
 };
 let L=(navigator.language||"").startsWith("fr")?"fr":"pt";
 try{const s=localStorage.getItem("cc-lang");if(s==="fr"||s==="pt")L=s}catch(e){}
@@ -39,7 +42,7 @@ const view=$("#view");
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-const S={matches:new Set(),me:null,admin:false,profiles:[],mine:null,myHandle:"",liked:new Set(),passed:new Set(),mode:"loading",reveal:null,note:""};
+const S={tip:false,matches:new Set(),me:null,admin:false,profiles:[],mine:null,myHandle:"",liked:new Set(),passed:new Set(),mode:"loading",reveal:null,note:""};
 
 function setLang(l){L=l;try{localStorage.setItem("cc-lang",l)}catch(e){}
   document.documentElement.lang=l==="pt"?"pt-BR":"fr";
@@ -74,8 +77,9 @@ function render(){
    ${top?`<button class="ghost" id="b-rep">${t("report")}</button>`:""}
    ${S.admin?`<button class="ghost" id="b-admin">${t("admin")}</button>`:""}
    <button class="ghost" id="b-out">${t("logout")}</button></div>
+   ${PIX_KEY||PAYPAL_URL?`<button class="tipbtn" id="b-tip">${t("tip")}</button>`:""}
    ${S.note?`<p class="foot">${esc(S.note)}</p>`:""}
-   ${S.reveal?revealHTML(S.reveal):""}`;
+   ${S.reveal?revealHTML(S.reveal):""}${S.tip?tipHTML():""}`;
   S.note="";
   $("#b-likes").onclick=()=>{S.mode="likes";render()};
   $("#b-edit").onclick=()=>{S.mode="form";render()};
@@ -84,6 +88,20 @@ function render(){
   if(top){$("#b-no").onclick=()=>swipe(top,false);$("#b-yes").onclick=()=>swipe(top,true);
     $("#b-rep").onclick=()=>report(top);drag(view.querySelector(".card:not(.back)"),top)}
   if(S.reveal)wireReveal();
+  if(PIX_KEY||PAYPAL_URL)$("#b-tip").onclick=()=>{S.tip=true;render()};
+  if(S.tip)wireTip();
+}
+function tipHTML(){
+  return `<div class="overlay" role="dialog" aria-modal="true"><div class="panel reveal">
+   <div style="font-size:2.4rem">☕</div><h2>${t("tipT")}</h2><p>${t("tipP")}</p>
+   ${PIX_KEY?`<div class="tipbox"><b>${t("pix")}</b><span class="handle" id="pix-key" style="font-size:1rem">${esc(PIX_KEY)}</span><button class="ghost" id="b-pix">${t("copyKey")}</button></div>`:""}
+   ${PAYPAL_URL?`<div class="tipbox"><b>${t("euro")}</b><a class="primary" href="${esc(PAYPAL_URL)}" target="_blank" rel="noopener" style="text-decoration:none">${t("open")}</a></div>`:""}
+   <button class="ghost" id="b-tipx">${t("close")}</button></div></div>`;
+}
+function wireTip(){
+  $("#b-tipx").onclick=()=>{S.tip=false;render()};
+  const b=$("#b-pix");if(b)b.onclick=()=>navigator.clipboard.writeText(PIX_KEY).then(()=>b.textContent=t("copied")).catch(()=>{
+    const r=document.createRange();r.selectNodeContents($("#pix-key"));const g=getSelection();g.removeAllRanges();g.addRange(r)});
 }
 
 function revealHTML(r){
