@@ -3,31 +3,34 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Coração Croissant 🇧🇷🥐🇫🇷</title>
-<meta name="description" content="Brasileiros × Franceses. Dê ❤️ e descubra o @ da pessoa.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥐</text></svg>">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;700&display=swap">
+<title>Matchifesto 🇧🇷🇫🇷</title>
+<meta name="description" content="Matchifesto: Brasileiros × Franceses. Deu match, descobre o @.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23111111'/><path fill='%23c8102e' d='M50 80 44 74.6C25 57.4 14 47.4 14 35.4 14 25.4 21.8 18 31.6 18c5.6 0 11 2.6 14.4 6.7C49.6 20.6 55 18 60.6 18 70.4 18 78 25.4 78 35.4c0 12-11 22-30 39.2z' transform='translate(4 2)'/></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Figtree:wght@400;500;700&display=swap">
 <style>
 /* Layout: one centered phone-width column; a stacked deck of cards is the whole app */
 :root{
-  --bg:#f6f3fb; --surface:#ffffff; --fg:#1d1a2e; --muted:#6c6684;
-  --bleu:#2c3fd6; --verde:#0d9b5c; --ouro:#f2b705; --rouge:#e0314b; --line:#e3def0;
-  --display:"Bricolage Grotesque",ui-rounded,system-ui,sans-serif;
+  --bg:#efe4cc; --surface:#f8f1e0; --fg:#111111; --muted:#5e554a;
+  --bleu:#2c3fd6; --verde:#0d8a52; --ouro:#f2b705; --rouge:#c8102e; --line:#d6c7a8;
+  --display:"Oswald",Impact,"Arial Narrow",sans-serif;
   --body:"Figtree",system-ui,-apple-system,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#14121f; --surface:#1f1c2f; --fg:#f1eef9; --muted:#a39dbb;
-  --bleu:#7f8cff; --verde:#3ccf8e; --ouro:#ffd23f; --rouge:#ff5f77; --line:#332f48; color-scheme:dark}}
+  --bg:#15120e; --surface:#221d17; --fg:#efe4cc; --muted:#b3a68f;
+  --bleu:#7f8cff; --verde:#3ccf8e; --ouro:#ffd23f; --rouge:#ef3e55; --line:#3a3128; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#14121f; --surface:#1f1c2f; --fg:#f1eef9; --muted:#a39dbb;
-  --bleu:#7f8cff; --verde:#3ccf8e; --ouro:#ffd23f; --rouge:#ff5f77; --line:#332f48; color-scheme:dark}
+  --bg:#15120e; --surface:#221d17; --fg:#efe4cc; --muted:#b3a68f;
+  --bleu:#7f8cff; --verde:#3ccf8e; --ouro:#ffd23f; --rouge:#ef3e55; --line:#3a3128; color-scheme:dark}
 html,body{min-height:100%;margin:0}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .wrap{max-width:420px;margin:0 auto;padding-block:14px 24px;display:flex;flex-direction:column;gap:16px;min-height:100%;box-sizing:border-box}
 header{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.logo{font-family:var(--display);font-weight:800;font-size:1.35rem;letter-spacing:-.02em;line-height:1}
-.logo .b{color:var(--verde)} .logo .f{color:var(--bleu)}
+.brand{display:flex;align-items:center;gap:10px}
+.mark{width:40px;height:40px;flex:none}
+.logo{font-family:var(--display);font-weight:700;font-size:1.45rem;line-height:.88;text-transform:uppercase;display:flex;flex-direction:column;transform:rotate(-4deg);transform-origin:left center}
+.logo .r{color:var(--rouge)}
+.slogan{font:700 .8rem var(--body);letter-spacing:.08em;text-align:center;color:var(--fg);margin:0}
 .tag{font-size:.78rem;color:var(--muted);margin-top:3px}
 .lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
 .lang button{border:0;background:none;color:var(--muted);font:700 .78rem var(--body);padding:6px 10px;cursor:pointer}
@@ -76,7 +79,7 @@ textarea{resize:vertical;min-height:70px}
 .err{color:var(--rouge);font-size:.88rem;min-height:1em}
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 .reveal{display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center}
-.handle{font:800 1.5rem var(--display);color:var(--bleu);overflow-wrap:anywhere;user-select:text}
+.handle{font:800 1.5rem var(--display);color:var(--rouge);overflow-wrap:anywhere;user-select:text}
 .list{display:flex;flex-direction:column;gap:8px}
 .li{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
 .li div{min-width:0;overflow-wrap:anywhere}
@@ -100,7 +103,8 @@ textarea{resize:vertical;min-height:70px}
 <div class="wrap">
   <header>
     <div>
-      <div class="logo"><span class="b">Coração</span> <span class="f">Croissant</span></div>
+      <div class="brand"><svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" fill="var(--fg)"/><path fill="var(--rouge)" transform="translate(4 2)" d="M50 80 44 74.6C25 57.4 14 47.4 14 35.4 14 25.4 21.8 18 31.6 18c5.6 0 11 2.6 14.4 6.7C49.6 20.6 55 18 60.6 18 70.4 18 78 25.4 78 35.4c0 12-11 22-30 39.2z"/></svg>
+      <div class="logo" aria-label="Matchifesto"><span>Match</span><span class="r">ifesto</span></div></div>
       <div class="tag" data-t="tag"></div>
     </div>
     <div class="lang" role="group" aria-label="Idioma / Langue">
@@ -110,6 +114,7 @@ textarea{resize:vertical;min-height:70px}
   </header>
   <main id="view"></main>
   <p class="foot" data-t="foot"></p>
+  <p class="slogan">Make love, not fachos</p>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="app.js"></script>
