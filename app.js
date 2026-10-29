@@ -10,7 +10,7 @@ const T={
  pt:{tag:"Brasileiros 🇧🇷 × Franceses 🇫🇷",foot:"Só maiores de 18 anos. O ❤️ mostra o @ da pessoa: a conversa continua na rede social dela.",
   loading:"Carregando…",login:"Entre com seu e-mail",loginP:"A gente te manda um link mágico. Sem senha.",email:"Seu e-mail",send:"Enviar link",
   sent:"Pronto! Abra seu e-mail e clique no link pra entrar.",spam:"Não chegou? Confira a caixa de spam 📬 e marque como \"não é spam\".",eMail:"Digite um e-mail válido.",eSend:"Não deu pra enviar o link. Espere um minutinho e tente de novo.",
-  welcome:"Crie seu cartão",welcomeP:"Escolha seu lado. Você só vai ver gente do outro país.",
+  welcome:"Crie seu cartão",welcomeP:"Diz de onde você é. A bandeirinha aparece no seu cartão.",
   iam:"Eu sou",br:"🇧🇷 Brasileira(o)",fr:"🇫🇷 Française / Français",name:"Nome",age:"Idade",city:"Cidade",
   langs:"Idiomas que você fala",langsPh:"português, um pouco de francês",bio:"Uma frase sobre você",bioPh:"Faço o melhor pão de queijo de Lyon",
   photo:"Suas fotos (1 a 5)",photoBtn:"Escolher foto",photoChange:"Trocar foto",ePhoto:"Coloque pelo menos uma foto sua pra criar o cartão.",photoHint:"A primeira é a capa. Toque no cartão pra ver as outras.",ePhotoBig:"Não deu pra usar essa imagem. Tente outra (JPG ou PNG).",handle:"Seu @ (Instagram, X, Bluesky…)",handlePh:"@seunome no Instagram",save:"Publicar meu cartão",
@@ -23,7 +23,7 @@ const T={
  fr:{tag:"Brésiliens 🇧🇷 × Français 🇫🇷",foot:"Réservé aux plus de 18 ans. Le ❤️ révèle le @ de la personne : la conversation continue sur son réseau.",
   loading:"Chargement…",login:"Connecte-toi avec ton e-mail",loginP:"On t'envoie un lien magique. Pas de mot de passe.",email:"Ton e-mail",send:"Envoyer le lien",
   sent:"C'est parti ! Ouvre ton e-mail et clique sur le lien.",spam:"Rien reçu ? Regarde dans tes spams 📬 et marque-le comme \"non spam\".",eMail:"Entre un e-mail valide.",eSend:"Impossible d'envoyer le lien. Attends une minute et réessaie.",
-  welcome:"Crée ta carte",welcomeP:"Choisis ton camp. Tu ne verras que des gens de l'autre pays.",
+  welcome:"Crée ta carte",welcomeP:"Dis-nous d'où tu viens. Le drapeau s'affiche sur ta carte.",
   iam:"Je suis",br:"🇧🇷 Brésilien·ne",fr:"🇫🇷 Française / Français",name:"Prénom",age:"Âge",city:"Ville",
   langs:"Langues parlées",langsPh:"français, un peu de portugais",bio:"Une phrase sur toi",bioPh:"Je connais tous les bars de samba de Paris",
   photo:"Tes photos (1 à 5)",photoBtn:"Choisir une photo",photoChange:"Changer la photo",ePhoto:"Ajoute au moins une photo de toi pour créer ta carte.",photoHint:"La première est la couverture. Touche la carte pour voir les autres.",ePhotoBig:"Impossible d'utiliser cette image. Essaie une autre (JPG ou PNG).",handle:"Ton @ (Instagram, X, Bluesky…)",handlePh:"@tonnom sur Instagram",save:"Publier ma carte",
@@ -50,7 +50,8 @@ function setLang(l){L=l;try{localStorage.setItem("cc-lang",l)}catch(e){}
   document.querySelectorAll("[data-t]").forEach(el=>el.textContent=t(el.dataset.t));render()}
 $("#lang-pt").onclick=()=>setLang("pt");$("#lang-fr").onclick=()=>setLang("fr");
 
-const deck=()=>!S.mine?[]:S.profiles.filter(p=>p.country!==S.mine.country&&p.id!==S.me&&!S.liked.has(p.id)&&!S.passed.has(p.id));
+const deck=()=>!S.mine?[]:S.profiles.filter(p=>p.id!==S.me&&!S.liked.has(p.id)&&!S.passed.has(p.id))
+  .sort((a,b)=>(a.country===S.mine.country)-(b.country===S.mine.country));
 
 function cardHTML(p,back){
   return `<article class="card${back?" back":""}" ${back?'aria-hidden="true"':''}>
