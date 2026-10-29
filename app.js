@@ -10,7 +10,7 @@ const T={
   welcome:"Crie seu cartão",welcomeP:"Escolha seu lado. Você só vai ver gente do outro país.",
   iam:"Eu sou",br:"🇧🇷 Brasileira(o)",fr:"🇫🇷 Française / Français",name:"Nome",age:"Idade",city:"Cidade",
   langs:"Idiomas que você fala",langsPh:"português, um pouco de francês",bio:"Uma frase sobre você",bioPh:"Faço o melhor pão de queijo de Lyon",
-  handle:"Seu @ (Instagram, X, Bluesky…)",handlePh:"@seunome no Instagram",save:"Publicar meu cartão",
+  photo:"Sua foto",photoBtn:"Escolher foto",photoChange:"Trocar foto",ePhoto:"Coloque uma foto sua pra criar o cartão.",ePhotoBig:"Não deu pra usar essa imagem. Tente outra (JPG ou PNG).",handle:"Seu @ (Instagram, X, Bluesky…)",handlePh:"@seunome no Instagram",save:"Publicar meu cartão",
   e18:"O app é só para maiores de 18 anos.",eReq:"Preencha nome, idade, cidade e seu @.",eSave:"Não deu pra salvar. Tente de novo.",
   empty:"Você viu todo mundo por enquanto",emptyP:"Volte mais tarde ou compartilhe o link pra chegar mais gente!",
   match:"Deu match! 🎉",matchP:"Vocês se curtiram. Chama essa pessoa em:",sentLike:"❤️ enviado! Se a pessoa te curtir também, o @ dela aparece nos seus matches.",copy:"Copiar @",copied:"Copiado!",next:"Próximo cartão",
@@ -23,7 +23,7 @@ const T={
   welcome:"Crée ta carte",welcomeP:"Choisis ton camp. Tu ne verras que des gens de l'autre pays.",
   iam:"Je suis",br:"🇧🇷 Brésilien·ne",fr:"🇫🇷 Française / Français",name:"Prénom",age:"Âge",city:"Ville",
   langs:"Langues parlées",langsPh:"français, un peu de portugais",bio:"Une phrase sur toi",bioPh:"Je connais tous les bars de samba de Paris",
-  handle:"Ton @ (Instagram, X, Bluesky…)",handlePh:"@tonnom sur Instagram",save:"Publier ma carte",
+  photo:"Ta photo",photoBtn:"Choisir une photo",photoChange:"Changer la photo",ePhoto:"Ajoute une photo de toi pour créer ta carte.",ePhotoBig:"Impossible d'utiliser cette image. Essaie une autre (JPG ou PNG).",handle:"Ton @ (Instagram, X, Bluesky…)",handlePh:"@tonnom sur Instagram",save:"Publier ma carte",
   e18:"L'appli est réservée aux plus de 18 ans.",eReq:"Remplis prénom, âge, ville et ton @.",eSave:"Impossible d'enregistrer. Réessaie.",
   empty:"Tu as vu tout le monde pour l'instant",emptyP:"Reviens plus tard ou partage le lien pour faire venir du monde !",
   match:"C'est un match ! 🎉",matchP:"Vous vous êtes plu. Écris à cette personne sur :",sentLike:"❤️ envoyé ! Si la personne te like aussi, son @ apparaîtra dans tes matchs.",copy:"Copier le @",copied:"Copié !",next:"Carte suivante",
@@ -51,8 +51,7 @@ const deck=()=>!S.mine?[]:S.profiles.filter(p=>p.country!==S.mine.country&&p.id!
 
 function cardHTML(p,back){
   return `<article class="card${back?" back":""}" ${back?'aria-hidden="true"':''}>
-   <div class="band ${p.country}"><span class="flag">${p.country==="br"?"🇧🇷 Brasil":"🇫🇷 France"}</span>
-   <div class="initial">${esc((p.name||"?").trim().charAt(0).toUpperCase())}</div></div>
+   <div class="band ${p.country}${p.photoUrl?" has-photo":""}">${p.photoUrl?`<img class="photo" src="${esc(p.photoUrl)}" alt="" draggable="false">`:`<div class="initial">${esc((p.name||"?").trim().charAt(0).toUpperCase())}</div>`}<span class="flag">${p.country==="br"?"🇧🇷 Brasil":"🇫🇷 France"}</span></div>
    <div class="info"><div class="name">${esc(p.name)} <small>${esc(p.age)}</small></div>
    <div class="meta">📍 ${esc(p.city)}</div><div class="bio">${esc(p.bio)}</div>
    ${p.langs?`<div class="chips">${p.langs.split(/[,;]/).map(x=>x.trim()).filter(Boolean).slice(0,5).map(x=>`<span class="chip">${esc(x)}</span>`).join("")}</div>`:""}
@@ -153,6 +152,9 @@ function renderForm(){
    <div><div style="font-size:.85rem;font-weight:700;margin-bottom:5px">${t("iam")}</div>
    <div class="pick"><button type="button" id="c-br" aria-pressed="${m.country==="br"}">${t("br")}</button>
    <button type="button" id="c-fr" aria-pressed="${m.country==="fr"}">${t("fr")}</button></div></div>
+   <div class="photo-pick"><div class="ph-prev" id="f-prev">${S.mineUrl?`<img src="${esc(S.mineUrl)}" alt="">`:"📷"}</div>
+   <label class="ghost ph-btn" for="f-photo">${S.mine?.photo?t("photoChange"):t("photoBtn")}</label>
+   <input id="f-photo" type="file" accept="image/*" hidden></div>
    <div class="row"><label for="f-name">${t("name")}<input id="f-name" maxlength="30" value="${esc(m.name)}"></label>
    <label for="f-age">${t("age")}<input id="f-age" type="number" min="18" max="99" inputmode="numeric" value="${esc(m.age)}"></label></div>
    <label for="f-city">${t("city")}<input id="f-city" maxlength="40" value="${esc(m.city)}"></label>
@@ -163,11 +165,15 @@ function renderForm(){
    <button class="primary" type="submit" id="f-btn">${t("save")}</button>
    ${S.mine?`<div class="toolbar"><button class="ghost" type="button" id="f-back">${t("back")}</button><button class="ghost" type="button" id="f-del">${t("del")}</button></div>`:""}
    </form>`;
-  let country=m.country;
+  let country=m.country,photoBlob=null;
+  $("#f-photo").onchange=async e=>{const f=e.target.files[0];if(!f)return;
+    try{photoBlob=await shrink(f);$("#f-prev").innerHTML=`<img src="${URL.createObjectURL(photoBlob)}" alt="">`;$("#f-err").textContent=""}
+    catch(err){photoBlob=null;$("#f-err").textContent=t("ePhotoBig")}};
   const setC=c=>{country=c;$("#c-br").setAttribute("aria-pressed",c==="br");$("#c-fr").setAttribute("aria-pressed",c==="fr")};
   $("#c-br").onclick=()=>setC("br");$("#c-fr").onclick=()=>setC("fr");
   if(S.mine){$("#f-back").onclick=()=>{S.mode="deck";render()};
     let armed=false;$("#f-del").onclick=async e=>{if(!armed){armed=true;e.currentTarget.textContent=t("confirmDel");return}
+      if(S.mine?.photo)await sb.storage.from("photos").remove([S.mine.photo]);
       const {error}=await sb.from("profiles").delete().eq("id",S.me);
       if(error){$("#f-err").textContent=t("eSave");return}
       S.mine=null;S.myHandle="";await loadProfiles();S.mode="form";render()}}
@@ -176,7 +182,14 @@ function renderForm(){
     const handle=v("f-handle");
     if(!d.name||!d.age||!d.city||!handle){$("#f-err").textContent=t("eReq");return}
     if(d.age<18){$("#f-err").textContent=t("e18");return}
+    if(!photoBlob&&!S.mine?.photo){$("#f-err").textContent=t("ePhoto");return}
     $("#f-btn").disabled=true;
+    d.photo=S.mine?.photo||null;
+    if(photoBlob){const path=`${S.me}/${Date.now()}.jpg`;
+      const up=await sb.storage.from("photos").upload(path,photoBlob,{contentType:"image/jpeg",upsert:true});
+      if(up.error){$("#f-btn").disabled=false;$("#f-err").textContent=t("eSave");return}
+      if(S.mine?.photo)sb.storage.from("photos").remove([S.mine.photo]);
+      d.photo=path}
     const r1=await sb.from("profiles").upsert(d);
     const r2=r1.error?r1:await sb.from("handles").upsert({id:S.me,handle});
     $("#f-btn").disabled=false;
@@ -209,12 +222,18 @@ async function renderAdmin(){
    <button class="ghost" id="a-back">${t("back")}</button></div>`;
   $("#a-back").onclick=()=>{S.mode="deck";render()};
   view.querySelectorAll("[data-rm]").forEach(b=>b.onclick=async()=>{
+    const p=S.profiles.find(x=>x.id===b.dataset.rm);if(p?.photo)await sb.storage.from("photos").remove([p.photo]);
     await sb.from("profiles").delete().eq("id",b.dataset.rm);await loadProfiles();renderAdmin()});
 }
 
 async function loadProfiles(){
   const {data}=await sb.from("profiles").select("*").order("updated_at",{ascending:false}).limit(2000);
-  S.profiles=data||[];S.mine=S.profiles.find(p=>p.id===S.me)||null;
+  S.profiles=data||[];
+  const paths=S.profiles.map(p=>p.photo).filter(Boolean);
+  if(paths.length){const {data:su}=await sb.storage.from("photos").createSignedUrls(paths,60*60*6);
+    const m=Object.fromEntries((su||[]).filter(x=>x.signedUrl).map(x=>[x.path,x.signedUrl]));
+    S.profiles.forEach(p=>{if(p.photo)p.photoUrl=m[p.photo]})}
+  S.mine=S.profiles.find(p=>p.id===S.me)||null;S.mineUrl=S.mine?.photoUrl||"";
 }
 
 async function boot(session){
@@ -229,6 +248,12 @@ async function boot(session){
   S.myHandle=hd.data?.handle||"";S.admin=!!ad.data;
   S.mode=S.mine?"deck":"form";render();
 }
+
+function shrink(file){return new Promise((res,rej)=>{const img=new Image();img.onload=()=>{
+  const max=900,k=Math.min(1,max/Math.max(img.width,img.height));const c=document.createElement("canvas");
+  c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+  c.toBlob(b=>b?res(b):rej(new Error("x")),"image/jpeg",0.82);URL.revokeObjectURL(img.src)};
+  img.onerror=()=>rej(new Error("x"));img.src=URL.createObjectURL(file)})}
 
 setLang(L);
 let booted=false;
