@@ -19,7 +19,7 @@ const T={
   match:"Deu match! 🎉",matchP:"Vocês se curtiram. Chama essa pessoa em:",sentLike:"❤️ enviado! Se a pessoa te curtir também, o @ dela aparece nos seus matches.",copy:"Copiar @",copied:"Copiado!",next:"Próximo cartão",
   edit:"Editar meu cartão",likes:"Meus matches",report:"Denunciar",reported:"Denúncia enviada. Obrigada!",back:"Voltar",
   likesEmpty:"Ainda sem match. Continue deslizando!",admin:"Moderação",remove:"Remover",reports:"denúncias",del:"Apagar meu cartão",
-  confirmDel:"Toque de novo para apagar",logout:"Sair",tip:"☕ Me paga um café",tipT:"Gostou? Me paga um café",tipP:"É só uma brincadeira, o app continua de graça. Se quiser apoiar, qualquer valor ajuda!",pix:"Pix (Brasil)",copyKey:"Copiar chave",euro:"Euro / outros países",open:"Abrir Ko-fi",close:"Fechar"},
+  confirmDel:"Toque de novo para apagar",delAcc:"Excluir minha conta",delAccConfirm:"Toque de novo: apaga cartão, fotos, matches e e-mail",delAccDone:"Conta excluída. Até logo! 👋",logout:"Sair",tip:"☕ Me paga um café",tipT:"Gostou? Me paga um café",tipP:"É só uma brincadeira, o app continua de graça. Se quiser apoiar, qualquer valor ajuda!",pix:"Pix (Brasil)",copyKey:"Copiar chave",euro:"Euro / outros países",open:"Abrir Ko-fi",close:"Fechar"},
  fr:{tag:"Brésiliens 🇧🇷 × Français 🇫🇷",foot:"Réservé aux plus de 18 ans. Le ❤️ révèle le @ de la personne : la conversation continue sur son réseau.",
   loading:"Chargement…",login:"Connecte-toi avec ton e-mail",loginP:"On t'envoie un lien magique. Pas de mot de passe.",email:"Ton e-mail",send:"Envoyer le lien",
   sent:"C'est parti ! Ouvre ton e-mail et clique sur le lien.",spam:"Rien reçu ? Regarde dans tes spams 📬 et marque-le comme \"non spam\".",eMail:"Entre un e-mail valide.",eSend:"Impossible d'envoyer le lien. Attends une minute et réessaie.",
@@ -32,7 +32,7 @@ const T={
   match:"C'est un match ! 🎉",matchP:"Vous vous êtes plu. Écris à cette personne sur :",sentLike:"❤️ envoyé ! Si la personne te like aussi, son @ apparaîtra dans tes matchs.",copy:"Copier le @",copied:"Copié !",next:"Carte suivante",
   edit:"Modifier ma carte",likes:"Mes matchs",report:"Signaler",reported:"Signalement envoyé. Merci !",back:"Retour",
   likesEmpty:"Pas encore de match. Continue à swiper !",admin:"Modération",remove:"Retirer",reports:"signalements",del:"Supprimer ma carte",
-  confirmDel:"Touche encore pour supprimer",logout:"Déconnexion",tip:"☕ Paie-moi un café",tipT:"Ça te plaît ? Paie-moi un café",tipP:"C’est juste pour le fun, l’appli reste gratuite. Si tu veux soutenir, chaque euro compte !",pix:"Pix (Brésil)",copyKey:"Copier la clé",euro:"Euro / autres pays",open:"Ouvrir Ko-fi",close:"Fermer"}
+  confirmDel:"Touche encore pour supprimer",delAcc:"Supprimer mon compte",delAccConfirm:"Touche encore : supprime carte, photos, matchs et e-mail",delAccDone:"Compte supprimé. À bientôt ! 👋",logout:"Déconnexion",tip:"☕ Paie-moi un café",tipT:"Ça te plaît ? Paie-moi un café",tipP:"C’est juste pour le fun, l’appli reste gratuite. Si tu veux soutenir, chaque euro compte !",pix:"Pix (Brésil)",copyKey:"Copier la clé",euro:"Euro / autres pays",open:"Ouvrir Ko-fi",close:"Fermer"}
 };
 let L=(navigator.language||"").startsWith("fr")?"fr":"pt";
 try{const s=localStorage.getItem("cc-lang");if(s==="fr"||s==="pt")L=s}catch(e){}
@@ -186,6 +186,7 @@ function renderForm(){
    <div class="err" id="f-err" role="alert"></div>
    <button class="primary" type="submit" id="f-btn">${t("save")}</button>
    ${S.mine?`<div class="toolbar"><button class="ghost" type="button" id="f-back">${t("back")}</button><button class="ghost" type="button" id="f-del">${t("del")}</button></div>`:""}
+   <button class="tipbtn" type="button" id="f-delacc">${t("delAcc")}</button>
    </form>`;
   let country=m.country;
   const old=(S.mine?.photos||[]).map((path,i)=>({path,url:S.mine.photoUrls?.[i]||""}));
@@ -199,6 +200,13 @@ function renderForm(){
   $("#f-photo").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f||slots.length>=5)return;
     try{const blob=await shrink(f);slots.push({blob,url:URL.createObjectURL(blob)});$("#f-err").textContent="";drawGrid()}
     catch(err){$("#f-err").textContent=t("ePhotoBig")}};
+  let armedAcc=false;$("#f-delacc").onclick=async e=>{
+    if(!armedAcc){armedAcc=true;e.currentTarget.textContent=t("delAccConfirm");return}
+    e.currentTarget.disabled=true;
+    if(S.mine?.photos?.length)await sb.storage.from("photos").remove(S.mine.photos);
+    const {error}=await sb.rpc("delete_my_account");
+    if(error){$("#f-err").textContent=t("eSave");e.currentTarget.disabled=false;return}
+    await sb.auth.signOut();view.innerHTML=`<div class="panel"><h2>${t("delAccDone")}</h2></div>`};
   const setC=c=>{country=c;$("#c-br").setAttribute("aria-pressed",c==="br");$("#c-fr").setAttribute("aria-pressed",c==="fr")};
   $("#c-br").onclick=()=>setC("br");$("#c-fr").onclick=()=>setC("fr");
   if(S.mine){$("#f-back").onclick=()=>{S.mode="deck";render()};
