@@ -55,7 +55,7 @@ const deck=()=>!S.mine?[]:S.profiles.filter(p=>p.id!==S.me&&!S.liked.has(p.id)&&
 
 function cardHTML(p,back){
   return `<article class="card${back?" back":""}" ${back?'aria-hidden="true"':''}>
-   <div class="band ${p.country}${p.photoUrls?.length?" has-photo":""}">${p.photoUrls?.length?`<img class="photo" src="${esc(p.photoUrls[pi(p)])}" alt="" draggable="false">${p.photoUrls.length>1?`<div class="dots">${p.photoUrls.map((_,i)=>`<i class="${i===pi(p)?"on":""}"></i>`).join("")}</div>`:""}`:`<div class="initial">${esc((p.name||"?").trim().charAt(0).toUpperCase())}</div>`}<span class="flag">${p.country==="br"?"🇧🇷 Brasil":"🇫🇷 France"}</span></div>
+   <div class="band ${p.country}${p.photoUrls?.length?" has-photo":""}">${p.photoUrls?.length?`<img class="photo" src="${esc(p.photoUrls[pi(p)])}" alt="" draggable="false"><button type="button" class="zoom" aria-label="ver foto inteira">⤢</button>${p.photoUrls.length>1?`<div class="dots">${p.photoUrls.map((_,i)=>`<i class="${i===pi(p)?"on":""}"></i>`).join("")}</div>`:""}`:`<div class="initial">${esc((p.name||"?").trim().charAt(0).toUpperCase())}</div>`}<span class="flag">${p.country==="br"?"🇧🇷 Brasil":"🇫🇷 France"}</span></div>
    <div class="info"><div class="name">${esc(p.name)} <small>${esc(p.age)}</small></div>
    <div class="meta">📍 ${esc(p.city)}</div><div class="bio">${esc(p.bio)}</div>
    ${p.langs?`<div class="chips">${p.langs.split(/[,;]/).map(x=>x.trim()).filter(Boolean).slice(0,5).map(x=>`<span class="chip">${esc(x)}</span>`).join("")}</div>`:""}
@@ -87,7 +87,9 @@ function render(){
   $("#b-out").onclick=async()=>{await sb.auth.signOut();location.reload()};
   if(S.admin)$("#b-admin").onclick=()=>{S.mode="admin";render()};
   if(top){$("#b-no").onclick=()=>swipe(top,false);$("#b-yes").onclick=()=>swipe(top,true);
-    $("#b-rep").onclick=()=>report(top);drag(view.querySelector(".card:not(.back)"),top)}
+    $("#b-rep").onclick=()=>report(top);drag(view.querySelector(".card:not(.back)"),top);
+    const z=view.querySelector(".card:not(.back) .zoom");
+    if(z){z.addEventListener("pointerdown",e=>e.stopPropagation());z.onclick=e=>{e.stopPropagation();openViewer(top)}}}
   if(S.reveal)wireReveal();
   if(PIX_KEY||PAYPAL_URL)$("#b-tip").onclick=()=>{S.tip=true;render()};
   if(S.tip)wireTip();
@@ -292,6 +294,22 @@ async function boot(session){
 }
 
 const pi=p=>S.pidx[p.id]||0;
+function openViewer(p){
+  const urls=p.photoUrls||[];if(!urls.length)return;let i=pi(p);
+  const ov=document.createElement("div");ov.className="viewer";ov.setAttribute("role","dialog");ov.setAttribute("aria-modal","true");
+  const close=()=>{S.pidx[p.id]=i;ov.remove();document.removeEventListener("keydown",key);render()};
+  const step=d=>{i=(i+d+urls.length)%urls.length;draw()};
+  const key=e=>{if(e.key==="Escape")close();if(urls.length>1&&e.key==="ArrowRight")step(1);if(urls.length>1&&e.key==="ArrowLeft")step(-1)};
+  function draw(){ov.innerHTML=`<img src="${esc(urls[i])}" alt="">
+    ${urls.length>1?`<button type="button" class="vnav prev" aria-label="anterior">‹</button><button type="button" class="vnav next" aria-label="próxima">›</button><div class="vcount">${i+1} / ${urls.length}</div>`:""}
+    <button type="button" class="vclose" aria-label="fechar">✕</button>`;
+    ov.querySelector(".vclose").onclick=close;
+    const pv=ov.querySelector(".prev"),nx=ov.querySelector(".next");
+    if(pv)pv.onclick=e=>{e.stopPropagation();step(-1)};
+    if(nx)nx.onclick=e=>{e.stopPropagation();step(1)}}
+  ov.addEventListener("click",e=>{if(e.target===ov)close()});document.addEventListener("keydown",key);
+  draw();document.body.appendChild(ov);ov.querySelector(".vclose").focus();
+}
 function shrink(file){return new Promise((res,rej)=>{const img=new Image();img.onload=()=>{
   const max=900,k=Math.min(1,max/Math.max(img.width,img.height));const c=document.createElement("canvas");
   c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);
