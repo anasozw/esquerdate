@@ -2,8 +2,8 @@
 const SUPABASE_URL = "https://iihesjxzqeovplqxeaod.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable__0H4IPQ0HNr2cxxcLcr-fg_dlQ1Qqjh";
 // Doações (deixe "" pra esconder)
-const PIX_KEY = "";
-const PAYPAL_URL = "";
+const PIX_KEY = "503f4b26-1281-4cb3-8ad2-280fe4c51b39";
+const PAYPAL_URL = "https://ko-fi.com/matchifesto";
 // ====================================================================
 
 const T={
@@ -19,7 +19,7 @@ const T={
   match:"Deu match! 🎉",matchP:"Vocês se curtiram. Chama essa pessoa em:",sentLike:"❤️ enviado! Se a pessoa te curtir também, o @ dela aparece nos seus matches.",copy:"Copiar @",copied:"Copiado!",next:"Próximo cartão",
   edit:"Editar meu cartão",likes:"Meus matches",report:"Denunciar",reported:"Denúncia enviada. Obrigada!",back:"Voltar",
   likesEmpty:"Ainda sem match. Continue deslizando!",admin:"Moderação",remove:"Remover",reports:"denúncias",del:"Apagar meu cartão",
-  confirmDel:"Toque de novo para apagar",logout:"Sair",tip:"☕ Me paga um café",tipT:"Gostou? Me paga um café",tipP:"É só uma brincadeira, o app continua de graça. Se quiser apoiar, qualquer valor ajuda!",pix:"Pix (Brasil)",copyKey:"Copiar chave",euro:"Euro / outros países",open:"Abrir PayPal",close:"Fechar"},
+  confirmDel:"Toque de novo para apagar",logout:"Sair",tip:"☕ Me paga um café",tipT:"Gostou? Me paga um café",tipP:"É só uma brincadeira, o app continua de graça. Se quiser apoiar, qualquer valor ajuda!",pix:"Pix (Brasil)",copyKey:"Copiar chave",euro:"Euro / outros países",open:"Abrir Ko-fi",close:"Fechar"},
  fr:{tag:"Brésiliens 🇧🇷 × Français 🇫🇷",foot:"Réservé aux plus de 18 ans. Le ❤️ révèle le @ de la personne : la conversation continue sur son réseau.",
   loading:"Chargement…",login:"Connecte-toi avec ton e-mail",loginP:"On t'envoie un lien magique. Pas de mot de passe.",email:"Ton e-mail",send:"Envoyer le lien",
   sent:"C'est parti ! Ouvre ton e-mail et clique sur le lien.",eMail:"Entre un e-mail valide.",eSend:"Impossible d'envoyer le lien. Attends une minute et réessaie.",
@@ -32,7 +32,7 @@ const T={
   match:"C'est un match ! 🎉",matchP:"Vous vous êtes plu. Écris à cette personne sur :",sentLike:"❤️ envoyé ! Si la personne te like aussi, son @ apparaîtra dans tes matchs.",copy:"Copier le @",copied:"Copié !",next:"Carte suivante",
   edit:"Modifier ma carte",likes:"Mes matchs",report:"Signaler",reported:"Signalement envoyé. Merci !",back:"Retour",
   likesEmpty:"Pas encore de match. Continue à swiper !",admin:"Modération",remove:"Retirer",reports:"signalements",del:"Supprimer ma carte",
-  confirmDel:"Touche encore pour supprimer",logout:"Déconnexion",tip:"☕ Paie-moi un café",tipT:"Ça te plaît ? Paie-moi un café",tipP:"C’est juste pour le fun, l’appli reste gratuite. Si tu veux soutenir, chaque euro compte !",pix:"Pix (Brésil)",copyKey:"Copier la clé",euro:"Euro / autres pays",open:"Ouvrir PayPal",close:"Fermer"}
+  confirmDel:"Touche encore pour supprimer",logout:"Déconnexion",tip:"☕ Paie-moi un café",tipT:"Ça te plaît ? Paie-moi un café",tipP:"C’est juste pour le fun, l’appli reste gratuite. Si tu veux soutenir, chaque euro compte !",pix:"Pix (Brésil)",copyKey:"Copier la clé",euro:"Euro / autres pays",open:"Ouvrir Ko-fi",close:"Fermer"}
 };
 let L=(navigator.language||"").startsWith("fr")?"fr":"pt";
 try{const s=localStorage.getItem("cc-lang");if(s==="fr"||s==="pt")L=s}catch(e){}
